@@ -24,12 +24,12 @@ func TestProductList(t *testing.T) {
 	httpmock.RegisterResponder("GET", fmt.Sprintf("https://fooshop.myshopify.com/%s/products.json", globalApiPathPrefix),
 		httpmock.NewStringResponder(200, `{"products": [{"id":1},{"id":2}]}`))
 
-	products, err := client.Product.List(nil)
+	products, _, err := client.Product.List(nil)
 	if err != nil {
 		t.Errorf("Product.List returned error: %v", err)
 	}
 
-	expected := []Product{{ID: 1}, {ID: 2}}
+	expected := []*Product{{ID: 1}, {ID: 2}}
 	if !reflect.DeepEqual(products, expected) {
 		t.Errorf("Product.List returned %+v, expected %+v", products, expected)
 	}
@@ -48,12 +48,12 @@ func TestProductListFilterByIds(t *testing.T) {
 
 	listOptions := ListOptions{IDs: []int64{1, 2, 3}}
 
-	products, err := client.Product.List(listOptions)
+	products, _, err := client.Product.List(listOptions)
 	if err != nil {
 		t.Errorf("Product.List returned error: %v", err)
 	}
 
-	expected := []Product{{ID: 1}, {ID: 2}, {ID: 3}}
+	expected := []*Product{{ID: 1}, {ID: 2}, {ID: 3}}
 	if !reflect.DeepEqual(products, expected) {
 		t.Errorf("Product.List returned %+v, expected %+v", products, expected)
 	}
