@@ -40,12 +40,12 @@ type Product struct {
 	Handle                         string          `json:"handle,omitempty"`
 	CreatedAt                      *time.Time      `json:"created_at,omitempty"`
 	UpdatedAt                      *time.Time      `json:"updated_at,omitempty"`
-	PublishedAt                    *time.Time      `json:"published_at"`
-	PublishedScope                 string          `json:"published_scope"`
+	PublishedAt                    *EmptiableTime  `json:"published_at,omitempty"`
+	PublishedScope                 string          `json:"published_scope,omitempty"`
 	Tags                           string          `json:"tags,omitempty"`
 	Options                        []ProductOption `json:"options,omitempty"`
 	Variants                       []Variant       `json:"variants,omitempty"`
-	Image                          Image           `json:"image,omitempty"`
+	Image                          *Image          `json:"image,omitempty"`
 	Images                         []Image         `json:"images,omitempty"`
 	TemplateSuffix                 string          `json:"template_suffix,omitempty"`
 	MetafieldsGlobalTitleTag       string          `json:"metafields_global_title_tag,omitempty"`
@@ -161,4 +161,33 @@ func (s *ProductServiceOp) UpdateMetafield(productID int64, metafield Metafield)
 func (s *ProductServiceOp) DeleteMetafield(productID int64, metafieldID int64) error {
 	metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceID: productID}
 	return metafieldService.Delete(metafieldID)
+}
+
+// EmptiableTime an emptiable time.Time
+// When marshalled in JSON:
+//  - marshalled into a nil, if a nil pointer
+//  - marshalled into "null", if the underlaying time value is zero
+//  - marshalled as a normal time.Time, if the time is set to a non-zero value
+type EmptiableTime struct {
+	time.Time
+}
+
+// MarshalJSON marshalls into JSON
+func (t *EmptiableTime) MarshalJSON() ([]byte, error) {
+	if t == nil {
+		return nil, nil
+	} else if t.IsZero() {
+		return []byte("null"), nil
+	} else {
+		return t.Time.MarshalJSON()
+	}
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (t *EmptiableTime) UnmarshalJSON(decimalBytes []byte) error {
+	if string(decimalBytes) == "" {
+		return nil
+	}
+
+	return t.Time.UnmarshalJSON(decimalBytes)
 }
