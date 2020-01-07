@@ -66,7 +66,7 @@ func (s *MetafieldServiceOp) List(options interface{}) ([]Metafield, error) {
 	prefix := MetafieldPathPrefix(s.resource, s.resourceID)
 	path := fmt.Sprintf("%s.json", prefix)
 	resource := new(MetafieldsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Metafields, err
 }
 
@@ -82,7 +82,7 @@ func (s *MetafieldServiceOp) Get(metafieldID int64, options interface{}) (*Metaf
 	prefix := MetafieldPathPrefix(s.resource, s.resourceID)
 	path := fmt.Sprintf("%s/%d.json", prefix, metafieldID)
 	resource := new(MetafieldResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Metafield, err
 }
 

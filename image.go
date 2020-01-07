@@ -52,7 +52,7 @@ type ImagesResource struct {
 func (s *ImageServiceOp) List(productID int64, options interface{}) ([]Image, error) {
 	path := fmt.Sprintf("%s/%s/%d/images.json", globalApiPathPrefix, productsBasePath, productID)
 	resource := new(ImagesResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Images, err
 }
 
@@ -66,7 +66,7 @@ func (s *ImageServiceOp) Count(productID int64, options interface{}) (int, error
 func (s *ImageServiceOp) Get(productID int64, imageID int64, options interface{}) (*Image, error) {
 	path := fmt.Sprintf("%s/%s/%d/images/%d.json", globalApiPathPrefix, productsBasePath, productID, imageID)
 	resource := new(ImageResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Image, err
 }
 

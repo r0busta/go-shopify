@@ -32,7 +32,7 @@ type TransactionsResource struct {
 func (s *TransactionServiceOp) List(orderID int64, options interface{}) ([]Transaction, error) {
 	path := fmt.Sprintf("%s/%s/%d/transactions.json", globalApiPathPrefix, ordersBasePath, orderID)
 	resource := new(TransactionsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Transactions, err
 }
 
@@ -46,7 +46,7 @@ func (s *TransactionServiceOp) Count(orderID int64, options interface{}) (int, e
 func (s *TransactionServiceOp) Get(orderID int64, transactionID int64, options interface{}) (*Transaction, error) {
 	path := fmt.Sprintf("%s/%s/%d/transactions/%d.json", globalApiPathPrefix, ordersBasePath, orderID, transactionID)
 	resource := new(TransactionResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Transaction, err
 }
 

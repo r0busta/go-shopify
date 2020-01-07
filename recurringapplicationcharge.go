@@ -141,7 +141,7 @@ func (r *RecurringApplicationChargeServiceOp) Get(chargeID int64, options interf
 
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, recurringApplicationChargesBasePath, chargeID)
 	resource := &RecurringApplicationChargeResource{}
-	err := r.client.Get(path, resource, options)
+	err := r.client.Get(path, resource, options, nil)
 	return resource.Charge, err
 }
 
@@ -151,7 +151,7 @@ func (r *RecurringApplicationChargeServiceOp) List(options interface{}) (
 
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, recurringApplicationChargesBasePath)
 	resource := &RecurringApplicationChargesResource{}
-	err := r.client.Get(path, resource, options)
+	err := r.client.Get(path, resource, options, nil)
 	return resource.Charges, err
 }
 

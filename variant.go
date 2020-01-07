@@ -76,7 +76,7 @@ type VariantsResource struct {
 func (s *VariantServiceOp) List(productID int64, options interface{}) ([]Variant, error) {
 	path := fmt.Sprintf("%s/%s/%d/variants.json", globalApiPathPrefix, productsBasePath, productID)
 	resource := new(VariantsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Variants, err
 }
 
@@ -90,7 +90,7 @@ func (s *VariantServiceOp) Count(productID int64, options interface{}) (int, err
 func (s *VariantServiceOp) Get(variantID int64, options interface{}) (*Variant, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, variantsBasePath, variantID)
 	resource := new(VariantResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Variant, err
 }
 

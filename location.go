@@ -83,14 +83,14 @@ type LocationServiceOp struct {
 func (s *LocationServiceOp) List(options interface{}) ([]Location, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, locationsBasePath)
 	resource := new(LocationsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Locations, err
 }
 
 func (s *LocationServiceOp) Get(ID int64, options interface{}) (*Location, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, locationsBasePath, ID)
 	resource := new(LocationResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Location, err
 }
 

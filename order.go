@@ -289,7 +289,7 @@ type RefundLineItem struct {
 func (s *OrderServiceOp) List(options interface{}) ([]Order, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, ordersBasePath)
 	resource := new(OrdersResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Orders, err
 }
 
@@ -303,7 +303,7 @@ func (s *OrderServiceOp) Count(options interface{}) (int, error) {
 func (s *OrderServiceOp) Get(orderID int64, options interface{}) (*Order, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, ordersBasePath, orderID)
 	resource := new(OrderResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Order, err
 }
 

@@ -57,7 +57,7 @@ type WebhooksResource struct {
 func (s *WebhookServiceOp) List(options interface{}) ([]Webhook, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, webhooksBasePath)
 	resource := new(WebhooksResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Webhooks, err
 }
 
@@ -71,7 +71,7 @@ func (s *WebhookServiceOp) Count(options interface{}) (int, error) {
 func (s *WebhookServiceOp) Get(webhookdID int64, options interface{}) (*Webhook, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, webhooksBasePath, webhookdID)
 	resource := new(WebhookResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Webhook, err
 }
 

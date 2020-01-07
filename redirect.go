@@ -45,7 +45,7 @@ type RedirectsResource struct {
 func (s *RedirectServiceOp) List(options interface{}) ([]Redirect, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, redirectsBasePath)
 	resource := new(RedirectsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Redirects, err
 }
 
@@ -59,7 +59,7 @@ func (s *RedirectServiceOp) Count(options interface{}) (int, error) {
 func (s *RedirectServiceOp) Get(redirectID int64, options interface{}) (*Redirect, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, redirectsBasePath, redirectID)
 	resource := new(RedirectResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Redirect, err
 }
 

@@ -67,7 +67,7 @@ type SmartCollectionsResource struct {
 func (s *SmartCollectionServiceOp) List(options interface{}) ([]SmartCollection, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, smartCollectionsBasePath)
 	resource := new(SmartCollectionsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Collections, err
 }
 
@@ -81,7 +81,7 @@ func (s *SmartCollectionServiceOp) Count(options interface{}) (int, error) {
 func (s *SmartCollectionServiceOp) Get(collectionID int64, options interface{}) (*SmartCollection, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, smartCollectionsBasePath, collectionID)
 	resource := new(SmartCollectionResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Collection, err
 }
 

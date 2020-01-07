@@ -12,7 +12,8 @@ const productsResourceName = "products"
 // of the Shopify API.
 // See: https://help.shopify.com/api/reference/product
 type ProductService interface {
-	List(interface{}) ([]Product, error)
+	List(interface{}) ([]*Product, *PaginationResponse, error)
+	ListPage(url string) ([]*Product, *PaginationResponse, error)
 	Count(interface{}) (int, error)
 	Get(int64, interface{}) (*Product, error)
 	Create(Product) (*Product, error)
@@ -69,15 +70,24 @@ type ProductResource struct {
 
 // Represents the result from the products.json endpoint
 type ProductsResource struct {
-	Products []Product `json:"products"`
+	Products []*Product `json:"products"`
 }
 
 // List products
-func (s *ProductServiceOp) List(options interface{}) ([]Product, error) {
+func (s *ProductServiceOp) List(options interface{}) ([]*Product, *PaginationResponse, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, productsBasePath)
 	resource := new(ProductsResource)
-	err := s.client.Get(path, resource, options)
-	return resource.Products, err
+	pagination := new(PaginationResponse)
+	err := s.client.Get(path, resource, options, pagination)
+	return resource.Products, pagination, err
+}
+
+// ListPage products
+func (s *ProductServiceOp) ListPage(url string) ([]*Product, *PaginationResponse, error) {
+	resource := new(ProductsResource)
+	pagination := new(PaginationResponse)
+	err := s.client.Get(url, resource, nil, pagination)
+	return resource.Products, pagination, err
 }
 
 // Count products
@@ -90,7 +100,7 @@ func (s *ProductServiceOp) Count(options interface{}) (int, error) {
 func (s *ProductServiceOp) Get(productID int64, options interface{}) (*Product, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, productsBasePath, productID)
 	resource := new(ProductResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Product, err
 }
 

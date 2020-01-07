@@ -250,7 +250,7 @@ func NewClient(app App, shopName, token string, opts ...Option) *Client {
 // Do sends an API request and populates the given interface with the parsed
 // response. It does not make much sense to call Do without a prepared
 // interface instance.
-func (c *Client) Do(req *http.Request, v interface{}) error {
+func (c *Client) Do(req *http.Request, v interface{}, pagination *PaginationResponse) error {
 	resp, err := c.Client.Do(req)
 	if err != nil {
 		return err
@@ -260,6 +260,29 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 	err = CheckResponseError(resp)
 	if err != nil {
 		return err
+	}
+
+	if pagination != nil {
+		if link := resp.Header.Get("Link"); link != "" {
+			links := strings.Split(link, ", ")
+
+			for _, l := range links {
+				parts := strings.Split(l, "; ")
+				url := strings.TrimSuffix(strings.TrimPrefix(parts[0], "<"), ">")
+				rel := strings.TrimSuffix(strings.TrimPrefix(parts[1], "rel=\""), "\"")
+
+				link := new(PaginationLink)
+				link.URL = url
+				link.Rel = rel
+
+				switch rel {
+				case "next":
+					pagination.Next = link
+				case "previous":
+					pagination.Prev = link
+				}
+			}
+		}
 	}
 
 	if v != nil {
@@ -374,6 +397,18 @@ func CheckResponseError(r *http.Response) error {
 	return wrapSpecificError(r, responseError)
 }
 
+// PaginationLink link
+type PaginationLink struct {
+	Rel string
+	URL string
+}
+
+// PaginationResponse type
+type PaginationResponse struct {
+	Next *PaginationLink
+	Prev *PaginationLink
+}
+
 // General list options that can be used for most collections of entities.
 type ListOptions struct {
 	Page         int       `url:"page,omitempty"`
@@ -401,7 +436,7 @@ func (c *Client) Count(path string, options interface{}) (int, error) {
 	resource := struct {
 		Count int `json:"count"`
 	}{}
-	err := c.Get(path, &resource, options)
+	err := c.Get(path, &resource, options, nil)
 	return resource.Count, err
 }
 
@@ -414,13 +449,13 @@ func (c *Client) Count(path string, options interface{}) (int, error) {
 // The options argument is used for specifying request options such as search
 // parameters like created_at_min
 // Any data returned from Shopify will be marshalled into resource argument.
-func (c *Client) CreateAndDo(method, path string, data, options, resource interface{}) error {
+func (c *Client) CreateAndDo(method, path string, data, options, resource interface{}, pagination *PaginationResponse) error {
 	req, err := c.NewRequest(method, path, data, options)
 	if err != nil {
 		return err
 	}
 
-	err = c.Do(req, resource)
+	err = c.Do(req, resource, pagination)
 	if err != nil {
 		return err
 	}
@@ -430,23 +465,23 @@ func (c *Client) CreateAndDo(method, path string, data, options, resource interf
 
 // Get performs a GET request for the given path and saves the result in the
 // given resource.
-func (c *Client) Get(path string, resource, options interface{}) error {
-	return c.CreateAndDo("GET", path, nil, options, resource)
+func (c *Client) Get(path string, resource, options interface{}, pagination *PaginationResponse) error {
+	return c.CreateAndDo("GET", path, nil, options, resource, pagination)
 }
 
 // Post performs a POST request for the given path and saves the result in the
 // given resource.
 func (c *Client) Post(path string, data, resource interface{}) error {
-	return c.CreateAndDo("POST", path, data, nil, resource)
+	return c.CreateAndDo("POST", path, data, nil, resource, nil)
 }
 
 // Put performs a PUT request for the given path and saves the result in the
 // given resource.
 func (c *Client) Put(path string, data, resource interface{}) error {
-	return c.CreateAndDo("PUT", path, data, nil, resource)
+	return c.CreateAndDo("PUT", path, data, nil, resource, nil)
 }
 
 // Delete performs a DELETE request for the given path
 func (c *Client) Delete(path string) error {
-	return c.CreateAndDo("DELETE", path, nil, nil, nil)
+	return c.CreateAndDo("DELETE", path, nil, nil, nil, nil)
 }

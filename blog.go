@@ -54,7 +54,7 @@ type BlogResource struct {
 func (s *BlogServiceOp) List(options interface{}) ([]Blog, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, blogsBasePath)
 	resource := new(BlogsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Blogs, err
 }
 
@@ -68,7 +68,7 @@ func (s *BlogServiceOp) Count(options interface{}) (int, error) {
 func (s *BlogServiceOp) Get(blogId int64, options interface{}) (*Blog, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, blogsBasePath, blogId)
 	resource := new(BlogResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Blog, err
 }
 

@@ -59,7 +59,7 @@ type PagesResource struct {
 func (s *PageServiceOp) List(options interface{}) ([]Page, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, pagesBasePath)
 	resource := new(PagesResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Pages, err
 }
 
@@ -73,7 +73,7 @@ func (s *PageServiceOp) Count(options interface{}) (int, error) {
 func (s *PageServiceOp) Get(pageID int64, options interface{}) (*Page, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, pagesBasePath, pageID)
 	resource := new(PageResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Page, err
 }
 

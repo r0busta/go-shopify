@@ -130,7 +130,7 @@ func (s *DraftOrderServiceOp) Create(draftOrder DraftOrder) (*DraftOrder, error)
 func (s *DraftOrderServiceOp) List(options interface{}) ([]DraftOrder, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, draftOrdersBasePath)
 	resource := new(DraftOrdersResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.DraftOrders, err
 }
 
@@ -159,7 +159,7 @@ func (s *DraftOrderServiceOp) Invoice(draftOrderID int64, draftOrderInvoice Draf
 func (s *DraftOrderServiceOp) Get(draftOrderID int64, options interface{}) (*DraftOrder, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, draftOrdersBasePath, draftOrderID)
 	resource := new(DraftOrderResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.DraftOrder, err
 }
 

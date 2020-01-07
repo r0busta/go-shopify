@@ -87,7 +87,7 @@ type CustomerSearchOptions struct {
 func (s *CustomerServiceOp) List(options interface{}) ([]Customer, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, customersBasePath)
 	resource := new(CustomersResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Customers, err
 }
 
@@ -101,7 +101,7 @@ func (s *CustomerServiceOp) Count(options interface{}) (int, error) {
 func (s *CustomerServiceOp) Get(customerID int64, options interface{}) (*Customer, error) {
 	path := fmt.Sprintf("%s/%s/%v.json", globalApiPathPrefix, customersBasePath, customerID)
 	resource := new(CustomerResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Customer, err
 }
 
@@ -133,7 +133,7 @@ func (s *CustomerServiceOp) Delete(customerID int64) error {
 func (s *CustomerServiceOp) Search(options interface{}) ([]Customer, error) {
 	path := fmt.Sprintf("%s/%s/search.json", globalApiPathPrefix, customersBasePath)
 	resource := new(CustomersResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Customers, err
 }
 
@@ -141,7 +141,7 @@ func (s *CustomerServiceOp) Search(options interface{}) ([]Customer, error) {
 func (s *CustomerServiceOp) ListOrders(customerID int64, options interface{}) ([]Order, error) {
 	path := fmt.Sprintf("%s/%s/%d/orders.json", globalApiPathPrefix, customersBasePath, customerID)
 	resource := new(OrdersResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Orders, err
 }
 
@@ -149,7 +149,7 @@ func (s *CustomerServiceOp) ListOrders(customerID int64, options interface{}) ([
 func (s *CustomerServiceOp) ListTags(options interface{}) ([]string, error) {
 	path := fmt.Sprintf("%s/%s/tags.json", globalApiPathPrefix, customersBasePath)
 	resource := new(CustomerTagsResource)
-	err := s.client.Get(path, resource, options)
+	err := s.client.Get(path, resource, options, nil)
 	return resource.Tags, err
 }
 
