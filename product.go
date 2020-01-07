@@ -40,8 +40,8 @@ type Product struct {
 	Handle                         string          `json:"handle,omitempty"`
 	CreatedAt                      *time.Time      `json:"created_at,omitempty"`
 	UpdatedAt                      *time.Time      `json:"updated_at,omitempty"`
-	PublishedAt                    *time.Time      `json:"published_at,omitempty"`
-	PublishedScope                 string          `json:"published_scope,omitempty"`
+	PublishedAt                    *time.Time      `json:"published_at"`
+	PublishedScope                 string          `json:"published_scope"`
 	Tags                           string          `json:"tags,omitempty"`
 	Options                        []ProductOption `json:"options,omitempty"`
 	Variants                       []Variant       `json:"variants,omitempty"`
