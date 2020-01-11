@@ -1,13 +1,14 @@
 package goshopify
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"testing"
 	"time"
 
-	"github.com/shopspring/decimal"
 	"github.com/jarcoal/httpmock"
+	"github.com/shopspring/decimal"
 )
 
 func variantTests(t *testing.T, variant Variant) {
@@ -365,5 +366,92 @@ func TestVariantDeleteMetafield(t *testing.T) {
 	err := client.Variant.DeleteMetafield(1, 2)
 	if err != nil {
 		t.Errorf("Variant.DeleteMetafield() returned error: %v", err)
+	}
+}
+
+func TestEmptiableDecimal_MarshalJSON(t *testing.T) {
+	expectedZero, err := decimal.NewFromString("0.00")
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+
+	expected, err := decimal.NewFromString("1.23")
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+
+	testCases := []struct {
+		desc        string
+		data        *EmptiableDecimal
+		expected    string
+		expectedErr bool
+		equal       bool
+	}{
+		{"Null", nil, `null`, false, true},
+		{"Empty", &EmptiableDecimal{}, `"0.00"`, false, true},
+		{"Zero", &EmptiableDecimal{expectedZero}, `"0.00"`, false, true},
+		{"Reference", &EmptiableDecimal{expected}, `"1.23"`, false, true},
+		{"Mismatch", &EmptiableDecimal{}, `"4.56"`, false, false},
+	}
+
+	for _, tc := range testCases {
+		out, err := json.Marshal(tc.data)
+		if actualErr := err != nil; actualErr != tc.expectedErr {
+			t.Errorf("%s: actualErr=%v, expectedErr=%v, err=%v", tc.desc, actualErr, tc.expectedErr, err)
+			continue
+		}
+		actual := string(out)
+		equal := actual == tc.expected
+		if equal != tc.equal {
+			t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, equal, tc.equal)
+			continue
+		}
+	}
+}
+
+func TestEmptiableDecimal_UnmarshalJSON(t *testing.T) {
+	expected, err := decimal.NewFromString("1.23")
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+	expectedZero, err := decimal.NewFromString("0.00")
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+
+	testCases := []struct {
+		desc        string
+		data        string
+		expected    *EmptiableDecimal
+		expectedErr bool
+		equal       bool
+	}{
+		{"Null", `null`, nil, false, true},
+		{"Empty", `""`, &EmptiableDecimal{expectedZero}, false, true},
+		{"Zero", `"0.00"`, &EmptiableDecimal{expectedZero}, false, true},
+		{"Reference", `"1.23"`, &EmptiableDecimal{expected}, false, true},
+		{"Mismatch", `"4.56"`, &EmptiableDecimal{}, false, false},
+		{"Invalid", `"abcd"`, &EmptiableDecimal{expected}, true, false},
+	}
+
+	for _, tc := range testCases {
+		var actual *EmptiableDecimal
+		err := json.Unmarshal([]byte(tc.data), &actual)
+		if actualErr := err != nil; actualErr != tc.expectedErr {
+			t.Errorf("%s: actualErr=%v, expectedErr=%v, err=%v", tc.desc, actualErr, tc.expectedErr, err)
+			continue
+		}
+		if actual == nil {
+			if tc.expected != nil {
+				t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, false, tc.equal)
+				continue
+			}
+			continue
+		}
+		equal := actual.Equal(tc.expected.Decimal)
+		if equal != tc.equal {
+			t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, equal, tc.equal)
+			continue
+		}
 	}
 }

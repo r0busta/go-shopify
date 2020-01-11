@@ -165,19 +165,19 @@ type EmptiableDecimal struct {
 // MarshalJSON marshall into JSON
 func (d *EmptiableDecimal) MarshalJSON() ([]byte, error) {
 	if d == nil {
-		return nil, nil
+		return []byte(`null`), nil
 	} else if d.Decimal.IsZero() {
-		return []byte(""), nil
+		return []byte(`"0.00"`), nil
 	} else {
 		return d.Decimal.MarshalJSON()
 	}
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
-func (d *EmptiableDecimal) UnmarshalJSON(decimalBytes []byte) error {
-	if string(decimalBytes) == "" {
+func (d *EmptiableDecimal) UnmarshalJSON(data []byte) error {
+	if string(data) == `""` || string(data) == `null` {
 		return nil
 	}
 
-	return d.Decimal.UnmarshalJSON(decimalBytes)
+	return d.Decimal.UnmarshalJSON(data)
 }

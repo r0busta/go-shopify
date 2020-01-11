@@ -175,19 +175,19 @@ type EmptiableTime struct {
 // MarshalJSON marshalls into JSON
 func (t *EmptiableTime) MarshalJSON() ([]byte, error) {
 	if t == nil {
-		return nil, nil
+		return []byte(`null`), nil
 	} else if t.IsZero() {
-		return []byte("null"), nil
+		return []byte(`null`), nil
 	} else {
 		return t.Time.MarshalJSON()
 	}
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
-func (t *EmptiableTime) UnmarshalJSON(decimalBytes []byte) error {
-	if string(decimalBytes) == "" {
+func (t *EmptiableTime) UnmarshalJSON(data []byte) error {
+	if string(data) == `""` || string(data) == `null` {
 		return nil
 	}
 
-	return t.Time.UnmarshalJSON(decimalBytes)
+	return t.Time.UnmarshalJSON(data)
 }
