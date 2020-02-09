@@ -1,6 +1,7 @@
 package goshopify
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"testing"
@@ -297,3 +298,179 @@ func TestProductDeleteMetafield(t *testing.T) {
 		t.Errorf("Product.DeleteMetafield() returned error: %v", err)
 	}
 }
+
+func TestEmptiableTime_MarshalJSON(t *testing.T) {
+	expectedZero := time.Time{}
+
+	expected, err := time.Parse("2006-01-02T15:04:05-07:00", "2007-12-31T19:00:00-05:00")
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+
+	testCases := []struct {
+		desc        string
+		data        *EmptiableTime
+		expected    string
+		expectedErr bool
+		equal       bool
+	}{
+		{"Null", nil, `null`, false, true},
+		{"Empty", &EmptiableTime{}, `null`, false, true},
+		{"Zero", &EmptiableTime{expectedZero}, `null`, false, true},
+		{"Reference", &EmptiableTime{expected}, `"2007-12-31T19:00:00-05:00"`, false, true},
+		{"Mismatch", &EmptiableTime{}, `"2020-12-31T19:00:00-05:00"`, false, false},
+	}
+
+	for _, tc := range testCases {
+		out, err := json.Marshal(tc.data)
+		if actualErr := err != nil; actualErr != tc.expectedErr {
+			t.Errorf("%s: actualErr=%v, expectedErr=%v, err=%v", tc.desc, actualErr, tc.expectedErr, err)
+			continue
+		}
+		actual := string(out)
+		equal := actual == tc.expected
+		if equal != tc.equal {
+			t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, equal, tc.equal)
+			continue
+		}
+	}
+}
+
+func TestEmptiableTime_UnmarshalJSON(t *testing.T) {
+	expectedZero := time.Time{}
+
+	expected, err := time.Parse("2006-01-02T15:04:05-07:00", "2007-12-31T19:00:00-05:00")
+	if err != nil {
+		t.Errorf("%s", err)
+	}
+
+	testCases := []struct {
+		desc        string
+		data        string
+		expected    *EmptiableTime
+		expectedErr bool
+		equal       bool
+	}{
+		{"Null", `null`, nil, false, true},
+		{"Empty", `""`, &EmptiableTime{expectedZero}, false, true},
+		{"Zero", `"0001-01-01T00:00:00Z"`, &EmptiableTime{expectedZero}, false, true},
+		{"Reference", `"2007-12-31T19:00:00-05:00"`, &EmptiableTime{expected}, false, true},
+		{"Mismatch", `"2020-12-31T19:00:00-05:00"`, &EmptiableTime{}, false, false},
+		{"Invalid", `"abcd"`, &EmptiableTime{expected}, true, false},
+	}
+
+	for _, tc := range testCases {
+		var actual *EmptiableTime
+		err := json.Unmarshal([]byte(tc.data), &actual)
+		if actualErr := err != nil; actualErr != tc.expectedErr {
+			t.Errorf("%s: actualErr=%v, expectedErr=%v, err=%v", tc.desc, actualErr, tc.expectedErr, err)
+			continue
+		}
+		if actual == nil {
+			if tc.expected != nil {
+				t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, false, tc.equal)
+				continue
+			}
+			continue
+		}
+		equal := actual.Equal(tc.expected.Time)
+		if equal != tc.equal {
+			t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, equal, tc.equal)
+			continue
+		}
+	}
+}
+
+// func TestProductPublishedAt_MarshalJSON(t *testing.T) {
+// 	expectedZero := &EmptiableTime{time.Time{}}
+
+// 	publishedAt, err := time.Parse("2006-01-02T15:04:05-07:00", "2007-12-31T19:00:00-05:00")
+// 	if err != nil {
+// 		t.Errorf("%s", err)
+// 	}
+
+// 	expected := &EmptiableTime{publishedAt}
+
+// 	testCases := []struct {
+// 		desc        string
+// 		data        *Product
+// 		expected    string
+// 		expectedErr bool
+// 		equal       bool
+// 	}{
+// 		{"Null", nil, `null`, false, true},
+// 		{"Unset", &Product{}, `{}`, false, true},
+// 		{"Set to nil", &Product{PublishedAt: nil}, `{}`, false, true},
+// 		{"Empty", &Product{PublishedAt: &EmptiableTime{}}, `{"published_at":null}`, false, true},
+// 		{"Zero", &Product{PublishedAt: expectedZero}, `{"published_at":null}`, false, true},
+// 		{"Reference", &Product{PublishedAt: expected}, `{"published_at":"2007-12-31T19:00:00-05:00"}`, false, true},
+// 		{"Mismatch", &Product{Title: "foo"}, `{"published_at":"2020-12-31T19:00:00-05:00"}`, false, false},
+// 	}
+
+// 	for _, tc := range testCases {
+// 		out, err := json.Marshal(tc.data)
+// 		if actualErr := err != nil; actualErr != tc.expectedErr {
+// 			t.Errorf("%s: actualErr=%v, expectedErr=%v, err=%v", tc.desc, actualErr, tc.expectedErr, err)
+// 			continue
+// 		}
+// 		actual := string(out)
+// 		equal := actual == tc.expected
+// 		if equal != tc.equal {
+// 			t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, equal, tc.equal)
+// 			continue
+// 		}
+// 	}
+// }
+
+// func TestProductPublishedAt_UnmarshalJSON(t *testing.T) {
+// 	publishedAt, err := time.Parse("2006-01-02T15:04:05-07:00", "2007-12-31T19:00:00-05:00")
+// 	if err != nil {
+// 		t.Errorf("%s", err)
+// 	}
+
+// 	expected := &EmptiableTime{publishedAt}
+
+// 	testCases := []struct {
+// 		desc        string
+// 		data        string
+// 		expected    *Product
+// 		expectedErr bool
+// 		equal       bool
+// 	}{
+// 		{"Null", `null`, nil, false, true},
+// 		{"Set to null", `{"published_at":null}`, &Product{PublishedAt: &EmptiableTime{}}, false, true},
+// 		{"Empty", `{"published_at":""}`, &Product{PublishedAt: &EmptiableTime{}}, false, true},
+// 		{"Zero", `{"published_at":"0001-01-01T00:00:00Z"}`, &Product{PublishedAt: &EmptiableTime{}}, false, true},
+// 		{"Reference", `{"published_at":"2007-12-31T19:00:00-05:00"}`, &Product{PublishedAt: expected}, false, true},
+// 		{"Mismatch", `{"published_at":"2020-12-31T19:00:00-05:00"}`, &Product{PublishedAt: expected}, false, false},
+// 		// {"Invalid", `"abcd"`, nil, true, false},
+// 	}
+
+// 	for _, tc := range testCases {
+// 		var actual *Product
+// 		err := json.Unmarshal([]byte(tc.data), &actual)
+// 		if actualErr := err != nil; actualErr != tc.expectedErr {
+// 			t.Errorf("%s: actualErr=%v, expectedErr=%v, err=%v", tc.desc, actualErr, tc.expectedErr, err)
+// 			continue
+// 		}
+// 		if actual == nil {
+// 			if tc.expected != nil {
+// 				t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, false, tc.equal)
+// 				continue
+// 			}
+// 			continue
+// 		}
+// 		if actual.PublishedAt == nil {
+// 			if tc.expected.PublishedAt != nil {
+// 				t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, false, tc.equal)
+// 				continue
+// 			}
+// 		} else {
+// 			equal := actual.PublishedAt.Equal(tc.expected.PublishedAt.Time)
+// 			if equal != tc.equal {
+// 				t.Errorf("%s: actual=%#v, expected=%#v, equal=%v, expected=%v", tc.desc, actual, tc.expected, equal, tc.equal)
+// 				continue
+// 			}
+// 		}
+// 	}
+// }

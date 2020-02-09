@@ -40,8 +40,9 @@ type Product struct {
 	Handle                         string          `json:"handle,omitempty"`
 	CreatedAt                      *time.Time      `json:"created_at,omitempty"`
 	UpdatedAt                      *time.Time      `json:"updated_at,omitempty"`
-	PublishedAt                    *EmptiableTime  `json:"published_at,omitempty"`
+	PublishedAt                    *time.Time      `json:"published_at,omitempty"`
 	PublishedScope                 string          `json:"published_scope,omitempty"`
+	Published                      *bool           `json:"published,omitempty"`
 	Tags                           string          `json:"tags,omitempty"`
 	Options                        []ProductOption `json:"options,omitempty"`
 	Variants                       []Variant       `json:"variants,omitempty"`
@@ -166,7 +167,7 @@ func (s *ProductServiceOp) DeleteMetafield(productID int64, metafieldID int64) e
 // EmptiableTime an emptiable time.Time
 // When marshalled in JSON:
 //  - marshalled into a nil, if a nil pointer
-//  - marshalled into "null", if the underlaying time value is zero
+//  - marshalled into "null", if the underlaying time value is zero or empty
 //  - marshalled as a normal time.Time, if the time is set to a non-zero value
 type EmptiableTime struct {
 	time.Time
