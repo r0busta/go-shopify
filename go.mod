@@ -1,4 +1,4 @@
-module github.com/r0busta/go-shopify.v2
+module github.com/r0busta/go-shopify
 
 go 1.12
 
