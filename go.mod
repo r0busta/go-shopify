@@ -1,6 +1,6 @@
-module github.com/r0busta/go-shopify
+module github.com/r0busta/go-shopify/v3
 
-go 1.12
+go 1.15
 
 require (
 	github.com/google/go-querystring v1.0.0
