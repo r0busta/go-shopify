@@ -47,7 +47,7 @@ type CollectsResource struct {
 func (s *CollectServiceOp) List(options interface{}) ([]Collect, error) {
 	path := fmt.Sprintf("%s.json", collectsBasePath)
 	resource := new(CollectsResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Collects, err
 }
 

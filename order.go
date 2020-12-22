@@ -399,7 +399,7 @@ func (s *OrderServiceOp) Count(options interface{}) (int, error) {
 func (s *OrderServiceOp) Get(orderID int64, options interface{}) (*Order, error) {
 	path := fmt.Sprintf("%s/%d.json", ordersBasePath, orderID)
 	resource := new(OrderResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Order, err
 }
 

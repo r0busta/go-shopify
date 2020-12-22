@@ -554,7 +554,7 @@ func TestCustomHTTPClientDo(t *testing.T) {
 		if err != nil {
 			t.Fatal(c.url, err)
 		}
-		err = client.Do(req, body, nil)
+		err = client.Do(req, body)
 		if err != nil {
 			t.Fatal(c.url, err)
 		}

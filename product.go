@@ -50,11 +50,10 @@ type Product struct {
 	UpdatedAt                      *time.Time      `json:"updated_at,omitempty"`
 	PublishedAt                    *time.Time      `json:"published_at,omitempty"`
 	PublishedScope                 string          `json:"published_scope,omitempty"`
-	Published                      *bool           `json:"published,omitempty"`
 	Tags                           string          `json:"tags,omitempty"`
 	Options                        []ProductOption `json:"options,omitempty"`
 	Variants                       []Variant       `json:"variants,omitempty"`
-	Image                          *Image          `json:"image,omitempty"`
+	Image                          Image           `json:"image,omitempty"`
 	Images                         []Image         `json:"images,omitempty"`
 	TemplateSuffix                 string          `json:"template_suffix,omitempty"`
 	MetafieldsGlobalTitleTag       string          `json:"metafields_global_title_tag,omitempty"`
@@ -91,7 +90,7 @@ type ProductResource struct {
 
 // Represents the result from the products.json endpoint
 type ProductsResource struct {
-	Products []*Product `json:"products"`
+	Products []Product `json:"products"`
 }
 
 // Pagination of results
@@ -206,7 +205,7 @@ func (s *ProductServiceOp) Count(options interface{}) (int, error) {
 func (s *ProductServiceOp) Get(productID int64, options interface{}) (*Product, error) {
 	path := fmt.Sprintf("%s/%d.json", productsBasePath, productID)
 	resource := new(ProductResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Product, err
 }
 
@@ -267,33 +266,4 @@ func (s *ProductServiceOp) UpdateMetafield(productID int64, metafield Metafield)
 func (s *ProductServiceOp) DeleteMetafield(productID int64, metafieldID int64) error {
 	metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceID: productID}
 	return metafieldService.Delete(metafieldID)
-}
-
-// EmptiableTime an emptiable time.Time
-// When marshalled in JSON:
-//  - marshalled into a nil, if a nil pointer
-//  - marshalled into "null", if the underlaying time value is zero or empty
-//  - marshalled as a normal time.Time, if the time is set to a non-zero value
-type EmptiableTime struct {
-	time.Time
-}
-
-// MarshalJSON marshalls into JSON
-func (t *EmptiableTime) MarshalJSON() ([]byte, error) {
-	if t == nil {
-		return []byte(`null`), nil
-	} else if t.IsZero() {
-		return []byte(`null`), nil
-	} else {
-		return t.Time.MarshalJSON()
-	}
-}
-
-// UnmarshalJSON implements the json.Unmarshaler interface.
-func (t *EmptiableTime) UnmarshalJSON(data []byte) error {
-	if string(data) == `""` || string(data) == `null` {
-		return nil
-	}
-
-	return t.Time.UnmarshalJSON(data)
 }

@@ -57,7 +57,7 @@ type assetGetOptions struct {
 func (s *AssetServiceOp) List(themeID int64, options interface{}) ([]Asset, error) {
 	path := fmt.Sprintf("%s/%d/assets.json", assetsBasePath, themeID)
 	resource := new(AssetsResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Assets, err
 }
 
@@ -69,7 +69,7 @@ func (s *AssetServiceOp) Get(themeID int64, key string) (*Asset, error) {
 		ThemeID: themeID,
 	}
 	resource := new(AssetResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Asset, err
 }
 

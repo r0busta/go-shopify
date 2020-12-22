@@ -46,7 +46,7 @@ type StorefrontAccessTokensResource struct {
 func (s *StorefrontAccessTokenServiceOp) List(options interface{}) ([]StorefrontAccessToken, error) {
 	path := fmt.Sprintf("%s.json", storefrontAccessTokensBasePath)
 	resource := new(StorefrontAccessTokensResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.StorefrontAccessTokens, err
 }
 

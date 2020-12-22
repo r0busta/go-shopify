@@ -41,7 +41,7 @@ type Variant struct {
 	Grams                int              `json:"grams,omitempty"`
 	InventoryPolicy      string           `json:"inventory_policy,omitempty"`
 	Price                *decimal.Decimal `json:"price,omitempty"`
-	CompareAtPrice       *decimal.Decimal `json:"compare_at_price"`
+	CompareAtPrice       *decimal.Decimal `json:"compare_at_price,omitempty"`
 	FulfillmentService   string           `json:"fulfillment_service,omitempty"`
 	InventoryManagement  string           `json:"inventory_management,omitempty"`
 	InventoryItemId      int64            `json:"inventory_item_id,omitempty"`
@@ -77,7 +77,7 @@ type VariantsResource struct {
 func (s *VariantServiceOp) List(productID int64, options interface{}) ([]Variant, error) {
 	path := fmt.Sprintf("%s/%d/variants.json", productsBasePath, productID)
 	resource := new(VariantsResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Variants, err
 }
 
@@ -91,7 +91,7 @@ func (s *VariantServiceOp) Count(productID int64, options interface{}) (int, err
 func (s *VariantServiceOp) Get(variantID int64, options interface{}) (*Variant, error) {
 	path := fmt.Sprintf("%s/%d.json", variantsBasePath, variantID)
 	resource := new(VariantResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Variant, err
 }
 

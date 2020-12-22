@@ -113,7 +113,6 @@ type Client struct {
 	DiscountCode               DiscountCodeService
 	PriceRule                  PriceRuleService
 	InventoryItem              InventoryItemService
-	InventoryLevel             InventoryLevelService
 	ShippingZone               ShippingZoneService
 	ProductListing             ProductListingService
 }
@@ -288,7 +287,6 @@ func NewClient(app App, shopName, token string, opts ...Option) *Client {
 	c.DiscountCode = &DiscountCodeServiceOp{client: c}
 	c.PriceRule = &PriceRuleServiceOp{client: c}
 	c.InventoryItem = &InventoryItemServiceOp{client: c}
-	c.InventoryLevel = &InventoryLevelServiceOp{client: c}
 	c.ShippingZone = &ShippingZoneServiceOp{client: c}
 	c.ProductListing = &ProductListingServiceOp{client: c}
 
@@ -373,29 +371,6 @@ func (c *Client) doGetHeaders(req *http.Request, v interface{}) (http.Header, er
 		// if using stable on first request set the api version
 		c.apiVersion = resp.Header.Get("X-Shopify-API-Version")
 		c.log.Infof("api version not set, now using %s", c.apiVersion)
-	}
-
-	if pagination != nil {
-		if link := resp.Header.Get("Link"); link != "" {
-			links := strings.Split(link, ", ")
-
-			for _, l := range links {
-				parts := strings.Split(l, "; ")
-				url := strings.TrimSuffix(strings.TrimPrefix(parts[0], "<"), ">")
-				rel := strings.TrimSuffix(strings.TrimPrefix(parts[1], "rel=\""), "\"")
-
-				link := new(PaginationLink)
-				link.URL = url
-				link.Rel = rel
-
-				switch rel {
-				case "next":
-					pagination.Next = link
-				case "previous":
-					pagination.Prev = link
-				}
-			}
-		}
 	}
 
 	if v != nil {
@@ -563,18 +538,6 @@ func CheckResponseError(r *http.Response) error {
 	return wrapSpecificError(r, responseError)
 }
 
-// PaginationLink link
-type PaginationLink struct {
-	Rel string
-	URL string
-}
-
-// PaginationResponse type
-type PaginationResponse struct {
-	Next *PaginationLink
-	Prev *PaginationLink
-}
-
 // General list options that can be used for most collections of entities.
 type ListOptions struct {
 
@@ -608,7 +571,7 @@ func (c *Client) Count(path string, options interface{}) (int, error) {
 	resource := struct {
 		Count int `json:"count"`
 	}{}
-	err := c.Get(path, &resource, options, nil)
+	err := c.Get(path, &resource, options)
 	return resource.Count, err
 }
 
@@ -647,23 +610,23 @@ func (c *Client) createAndDoGetHeaders(method, relPath string, data, options, re
 
 // Get performs a GET request for the given path and saves the result in the
 // given resource.
-func (c *Client) Get(path string, resource, options interface{}, pagination *PaginationResponse) error {
-	return c.CreateAndDo("GET", path, nil, options, resource, pagination)
+func (c *Client) Get(path string, resource, options interface{}) error {
+	return c.CreateAndDo("GET", path, nil, options, resource)
 }
 
 // Post performs a POST request for the given path and saves the result in the
 // given resource.
 func (c *Client) Post(path string, data, resource interface{}) error {
-	return c.CreateAndDo("POST", path, data, nil, resource, nil)
+	return c.CreateAndDo("POST", path, data, nil, resource)
 }
 
 // Put performs a PUT request for the given path and saves the result in the
 // given resource.
 func (c *Client) Put(path string, data, resource interface{}) error {
-	return c.CreateAndDo("PUT", path, data, nil, resource, nil)
+	return c.CreateAndDo("PUT", path, data, nil, resource)
 }
 
 // Delete performs a DELETE request for the given path
 func (c *Client) Delete(path string) error {
-	return c.CreateAndDo("DELETE", path, nil, nil, nil, nil)
+	return c.CreateAndDo("DELETE", path, nil, nil, nil)
 }

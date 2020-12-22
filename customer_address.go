@@ -56,7 +56,7 @@ type CustomerAddressesResource struct {
 func (s *CustomerAddressServiceOp) List(customerID int64, options interface{}) ([]CustomerAddress, error) {
 	path := fmt.Sprintf("%s/%d/addresses.json", customersBasePath, customerID)
 	resource := new(CustomerAddressesResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Addresses, err
 }
 
@@ -64,7 +64,7 @@ func (s *CustomerAddressServiceOp) List(customerID int64, options interface{}) (
 func (s *CustomerAddressServiceOp) Get(customerID, addressID int64, options interface{}) (*CustomerAddress, error) {
 	path := fmt.Sprintf("%s/%d/addresses/%d.json", customersBasePath, customerID, addressID)
 	resource := new(CustomerAddressResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Address, err
 }
 

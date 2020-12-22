@@ -59,7 +59,7 @@ type CustomCollectionsResource struct {
 func (s *CustomCollectionServiceOp) List(options interface{}) ([]CustomCollection, error) {
 	path := fmt.Sprintf("%s.json", customCollectionsBasePath)
 	resource := new(CustomCollectionsResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Collections, err
 }
 
@@ -73,7 +73,7 @@ func (s *CustomCollectionServiceOp) Count(options interface{}) (int, error) {
 func (s *CustomCollectionServiceOp) Get(collectionID int64, options interface{}) (*CustomCollection, error) {
 	path := fmt.Sprintf("%s/%d.json", customCollectionsBasePath, collectionID)
 	resource := new(CustomCollectionResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Collection, err
 }
 

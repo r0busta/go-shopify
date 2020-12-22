@@ -61,14 +61,14 @@ func (a ApplicationChargeServiceOp) Create(charge ApplicationCharge) (*Applicati
 func (a ApplicationChargeServiceOp) Get(chargeID int64, options interface{}) (*ApplicationCharge, error) {
 	path := fmt.Sprintf("%s/%d.json", applicationChargesBasePath, chargeID)
 	resource := &ApplicationChargeResource{}
-	return resource.Charge, a.client.Get(path, resource, options, nil)
+	return resource.Charge, a.client.Get(path, resource, options)
 }
 
 // List gets all application charges.
 func (a ApplicationChargeServiceOp) List(options interface{}) ([]ApplicationCharge, error) {
 	path := fmt.Sprintf("%s.json", applicationChargesBasePath)
 	resource := &ApplicationChargesResource{}
-	return resource.Charges, a.client.Get(path, resource, options, nil)
+	return resource.Charges, a.client.Get(path, resource, options)
 }
 
 // Activate activates application charge.

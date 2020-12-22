@@ -64,7 +64,7 @@ type ScriptTagResource struct {
 func (s *ScriptTagServiceOp) List(options interface{}) ([]ScriptTag, error) {
 	path := fmt.Sprintf("%s.json", scriptTagsBasePath)
 	resource := &ScriptTagsResource{}
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.ScriptTags, err
 }
 
@@ -78,7 +78,7 @@ func (s *ScriptTagServiceOp) Count(options interface{}) (int, error) {
 func (s *ScriptTagServiceOp) Get(tagID int64, options interface{}) (*ScriptTag, error) {
 	path := fmt.Sprintf("%s/%d.json", scriptTagsBasePath, tagID)
 	resource := &ScriptTagResource{}
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.ScriptTag, err
 }
 

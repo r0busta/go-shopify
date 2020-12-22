@@ -66,7 +66,7 @@ func (s *DiscountCodeServiceOp) Update(priceRuleID int64, dc PriceRuleDiscountCo
 func (s *DiscountCodeServiceOp) List(priceRuleID int64) ([]PriceRuleDiscountCode, error) {
 	path := fmt.Sprintf(discountCodeBasePath+".json", priceRuleID)
 	resource := new(DiscountCodesResource)
-	err := s.client.Get(path, resource, nil, nil)
+	err := s.client.Get(path, resource, nil)
 	return resource.DiscountCodes, err
 }
 
@@ -74,7 +74,7 @@ func (s *DiscountCodeServiceOp) List(priceRuleID int64) ([]PriceRuleDiscountCode
 func (s *DiscountCodeServiceOp) Get(priceRuleID int64, discountCodeID int64) (*PriceRuleDiscountCode, error) {
 	path := fmt.Sprintf(discountCodeBasePath+"/%d.json", priceRuleID, discountCodeID)
 	resource := new(DiscountCodeResource)
-	err := s.client.Get(path, resource, nil, nil)
+	err := s.client.Get(path, resource, nil)
 	return resource.PriceRuleDiscountCode, err
 }
 

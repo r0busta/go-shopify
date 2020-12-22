@@ -87,7 +87,7 @@ type CustomerSearchOptions struct {
 func (s *CustomerServiceOp) List(options interface{}) ([]Customer, error) {
 	path := fmt.Sprintf("%s.json", customersBasePath)
 	resource := new(CustomersResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Customers, err
 }
 
@@ -101,7 +101,7 @@ func (s *CustomerServiceOp) Count(options interface{}) (int, error) {
 func (s *CustomerServiceOp) Get(customerID int64, options interface{}) (*Customer, error) {
 	path := fmt.Sprintf("%s/%v.json", customersBasePath, customerID)
 	resource := new(CustomerResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Customer, err
 }
 
@@ -133,7 +133,7 @@ func (s *CustomerServiceOp) Delete(customerID int64) error {
 func (s *CustomerServiceOp) Search(options interface{}) ([]Customer, error) {
 	path := fmt.Sprintf("%s/search.json", customersBasePath)
 	resource := new(CustomersResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Customers, err
 }
 
@@ -141,7 +141,7 @@ func (s *CustomerServiceOp) Search(options interface{}) ([]Customer, error) {
 func (s *CustomerServiceOp) ListOrders(customerID int64, options interface{}) ([]Order, error) {
 	path := fmt.Sprintf("%s/%d/orders.json", customersBasePath, customerID)
 	resource := new(OrdersResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Orders, err
 }
 
@@ -149,7 +149,7 @@ func (s *CustomerServiceOp) ListOrders(customerID int64, options interface{}) ([
 func (s *CustomerServiceOp) ListTags(options interface{}) ([]string, error) {
 	path := fmt.Sprintf("%s/tags.json", customersBasePath)
 	resource := new(CustomerTagsResource)
-	err := s.client.Get(path, resource, options, nil)
+	err := s.client.Get(path, resource, options)
 	return resource.Tags, err
 }
 
