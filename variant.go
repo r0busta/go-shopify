@@ -33,34 +33,34 @@ type VariantServiceOp struct {
 
 // Variant represents a Shopify variant
 type Variant struct {
-	ID                   int64            `json:"id,omitempty"`
-	ProductID            int64            `json:"product_id,omitempty"`
-	Title                string           `json:"title,omitempty"`
-	Sku                  string           `json:"sku,omitempty"`
-	Position             int              `json:"position,omitempty"`
-	Grams                int              `json:"grams,omitempty"`
-	InventoryPolicy      string           `json:"inventory_policy,omitempty"`
-	Price                *decimal.Decimal `json:"price,omitempty"`
-	CompareAtPrice       *decimal.Decimal `json:"compare_at_price,omitempty"`
-	FulfillmentService   string           `json:"fulfillment_service,omitempty"`
-	InventoryManagement  string           `json:"inventory_management,omitempty"`
-	InventoryItemId      int64            `json:"inventory_item_id,omitempty"`
-	Option1              string           `json:"option1,omitempty"`
-	Option2              string           `json:"option2,omitempty"`
-	Option3              string           `json:"option3,omitempty"`
-	CreatedAt            *time.Time       `json:"created_at,omitempty"`
-	UpdatedAt            *time.Time       `json:"updated_at,omitempty"`
-	Taxable              bool             `json:"taxable,omitempty"`
-	TaxCode              string           `json:"tax_code,omitempty"`
-	Barcode              string           `json:"barcode,omitempty"`
-	ImageID              int64            `json:"image_id,omitempty"`
-	InventoryQuantity    int              `json:"inventory_quantity,omitempty"`
-	Weight               *decimal.Decimal `json:"weight,omitempty"`
-	WeightUnit           string           `json:"weight_unit,omitempty"`
-	OldInventoryQuantity int              `json:"old_inventory_quantity,omitempty"`
-	RequireShipping      bool             `json:"requires_shipping,omitempty"`
-	AdminGraphqlAPIID    string           `json:"admin_graphql_api_id,omitempty"`
-	Metafields           []Metafield      `json:"metafields,omitempty"`
+	ID                   int64             `json:"id,omitempty"`
+	ProductID            int64             `json:"product_id,omitempty"`
+	Title                string            `json:"title,omitempty"`
+	Sku                  string            `json:"sku,omitempty"`
+	Position             int               `json:"position,omitempty"`
+	Grams                int               `json:"grams,omitempty"`
+	InventoryPolicy      string            `json:"inventory_policy,omitempty"`
+	Price                *decimal.Decimal  `json:"price,omitempty"`
+	CompareAtPrice       *EmptiableDecimal `json:"compare_at_price"`
+	FulfillmentService   string            `json:"fulfillment_service,omitempty"`
+	InventoryManagement  string            `json:"inventory_management,omitempty"`
+	InventoryItemId      int64             `json:"inventory_item_id,omitempty"`
+	Option1              string            `json:"option1,omitempty"`
+	Option2              string            `json:"option2,omitempty"`
+	Option3              string            `json:"option3,omitempty"`
+	CreatedAt            *time.Time        `json:"created_at,omitempty"`
+	UpdatedAt            *time.Time        `json:"updated_at,omitempty"`
+	Taxable              bool              `json:"taxable,omitempty"`
+	TaxCode              string            `json:"tax_code,omitempty"`
+	Barcode              string            `json:"barcode,omitempty"`
+	ImageID              int64             `json:"image_id,omitempty"`
+	InventoryQuantity    int               `json:"inventory_quantity,omitempty"`
+	Weight               *decimal.Decimal  `json:"weight,omitempty"`
+	WeightUnit           string            `json:"weight_unit,omitempty"`
+	OldInventoryQuantity int               `json:"old_inventory_quantity,omitempty"`
+	RequireShipping      bool              `json:"requires_shipping,omitempty"`
+	AdminGraphqlAPIID    string            `json:"admin_graphql_api_id,omitempty"`
+	Metafields           []Metafield       `json:"metafields,omitempty"`
 }
 
 // VariantResource represents the result from the variants/X.json endpoint
@@ -152,4 +152,33 @@ func (s *VariantServiceOp) UpdateMetafield(variantID int64, metafield Metafield)
 func (s *VariantServiceOp) DeleteMetafield(variantID int64, metafieldID int64) error {
 	metafieldService := &MetafieldServiceOp{client: s.client, resource: variantsResourceName, resourceID: variantID}
 	return metafieldService.Delete(metafieldID)
+}
+
+// EmptiableDecimal an emptiable decimal.Decimal
+// When marshalled in JSON:
+//  - marshalled into a nil, if a nil pointer
+//  - marshalled into "", if the underlaying decimal value is zero
+//  - marshalled as a normal decimal.Decimal, if the underlaying decimal is set to a non-zero value
+type EmptiableDecimal struct {
+	decimal.Decimal
+}
+
+// MarshalJSON marshall into JSON
+func (d *EmptiableDecimal) MarshalJSON() ([]byte, error) {
+	if d == nil {
+		return []byte(`null`), nil
+	} else if d.Decimal.IsZero() {
+		return []byte(`"0.00"`), nil
+	} else {
+		return d.Decimal.MarshalJSON()
+	}
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (d *EmptiableDecimal) UnmarshalJSON(data []byte) error {
+	if string(data) == `""` || string(data) == `null` {
+		return nil
+	}
+
+	return d.Decimal.UnmarshalJSON(data)
 }
